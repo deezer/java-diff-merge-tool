@@ -1,20 +1,13 @@
 /*
  * Created on 22/11/2006
  */
-package japa.parser.ast.test;
+package japa.parser.ast.legacy;
 
 import japa.parser.JavaParser;
 import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.test.classes.DumperTestClass;
-import japa.parser.ast.test.classes.JavadocTestClass;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringBufferInputStream;
-
 import junit.framework.TestCase;
+
+import java.io.*;
 
 /**
  * @author Julio Vilmar Gesser
@@ -37,13 +30,13 @@ public class TestDumper extends TestCase {
     }
 
     public void testDumpVisitor() throws Exception {
-        String source = readFile("./test/" + DumperTestClass.class.getName().replace('.', '/') + ".java");
+        String source = readFile("./JavaParser/test_data/legacy/DumperTestClass.java");
         CompilationUnit cu = JavaParser.parse(new StringBufferInputStream(source));
         assertEquals(source, cu.toString());
     }
 
     public void testJavadoc() throws Exception {
-        String source = readFile("./test/" + JavadocTestClass.class.getName().replace('.', '/') + ".java");
+        String source = readFile("./JavaParser/test_data/legacy/JavadocTestClass.java");
         CompilationUnit cu = JavaParser.parse(new StringBufferInputStream(source));
         assertEquals(source, cu.toString());
         assertEquals(19, cu.getComments().size());
