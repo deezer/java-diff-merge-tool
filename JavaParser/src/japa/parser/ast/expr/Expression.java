@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Júlio Vilmar Gesser.
+ * Copyright (C) 2007 Jï¿½lio Vilmar Gesser.
  * 
  * This file is part of Java 1.5 parser and Abstract Syntax Tree.
  *
@@ -31,5 +31,6 @@ public abstract class Expression extends Node {
     public Expression(int line, int column) {
         super(line, column);
     }
+
 
 }

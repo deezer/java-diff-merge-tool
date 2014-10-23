@@ -64,16 +64,25 @@ public class SmartDiff {
                 // same order, nothing to do
             } else if (s >= 0) {
                 // reordered imports
-                mDifferences.add(new ImportsOrderDiffInfo(fID.getName(), f, s));
+                mDifferences.add(new ImportsOrderDiffInfo(fID.getName().getFullName(), f, s));
             } else {
-                // TODO add missing info
+                mDifferences.add(new MissingImportDiffInfo(fID.getName().getFullName()));
             }
+        }
 
+        // find new decl
+        for (int s = 0; s < secondIDs.size(); ++s) {
+            final ImportDeclaration sID = secondIDs.get(s);
+
+            // find import with same name in second list
+            int f = CollectionsFinder.findIndex(firstIDs, ImportDeclarations.namePredicate(sID));
+
+            // we only care for imports not in the first CU
+            if (f < 0) {
+                mDifferences.add(new NewImportDiffInfo(sID.getName().getFullName()));
+            }
         }
 
     }
 
-    private boolean areLocationIdentical(Node first, Node second) {
-        return false;
-    }
 }

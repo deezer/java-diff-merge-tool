@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Júlio Vilmar Gesser.
+ * Copyright (C) 2007 Jï¿½lio Vilmar Gesser.
  * 
  * This file is part of Java 1.5 parser and Abstract Syntax Tree.
  *
@@ -33,11 +33,19 @@ public final class QualifiedNameExpr extends NameExpr {
 
     public QualifiedNameExpr(int line, int column, NameExpr scope, String name) {
         super(line, column, name);
+        if (scope == null) {
+            throw new NullPointerException();
+        }
         this.qualifier = scope;
     }
 
     public NameExpr getQualifier() {
         return qualifier;
+    }
+
+    @Override
+    public String getFullName() {
+        return String.format("%s.%s", qualifier, getName());
     }
 
     @Override
@@ -50,4 +58,23 @@ public final class QualifiedNameExpr extends NameExpr {
         return v.visit(this, arg);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof QualifiedNameExpr)) return false;
+        if (!super.equals(o)) return false;
+
+        QualifiedNameExpr that = (QualifiedNameExpr) o;
+
+        if (!qualifier.equals(that.qualifier)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + qualifier.hashCode();
+        return result;
+    }
 }

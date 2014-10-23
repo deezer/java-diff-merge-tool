@@ -19,27 +19,18 @@ public final class ImportDeclarations {
     public static CollectionsFinder.Predicate<ImportDeclaration> namePredicate(final ImportDeclaration decl) {
         return new CollectionsFinder.Predicate<ImportDeclaration>() {
             NameExpr mDeclName = decl.getName();
-            NameExpr mDeclQName = (mDeclName instanceof QualifiedNameExpr) ? ((QualifiedNameExpr) mDeclName).getQualifier() : null;
-            Class mDeclNameClass = mDeclName.getClass();
 
             @Override
             public boolean matches(ImportDeclaration item) {
-                NameExpr itemName, itemQName;
+                NameExpr itemName;
                 itemName = item.getName();
 
-                // Check if this is a Qualified Name
-                if (itemName instanceof QualifiedNameExpr) {
-                    if (mDeclQName == null) {
-                        return false;
-                    }
-
-                    itemQName = ((QualifiedNameExpr) itemName).getQualifier();
-
-                    return itemName.getName().equals(mDeclName.getName()) && itemQName.getName().equals(mDeclQName.getName());
-
+                if (mDeclName == null) {
+                    return itemName == null;
                 } else {
-                    return itemName.getName().equals(mDeclName.getName());
+                    return mDeclName.equals(itemName);
                 }
+
             }
         };
     }
