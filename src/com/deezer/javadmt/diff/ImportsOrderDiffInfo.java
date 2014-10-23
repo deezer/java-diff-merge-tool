@@ -55,4 +55,13 @@ public class ImportsOrderDiffInfo extends ADiffInfo {
         result = 31 * result + mNewOrder;
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "ImportsOrderDiffInfo{" +
+                "'" + mImportName + '\'' +
+                ", " + mPreviousOrder +
+                "=> " + mNewOrder +
+                '}';
+    }
 }

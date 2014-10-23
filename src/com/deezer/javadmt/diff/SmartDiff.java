@@ -48,6 +48,9 @@ public class SmartDiff {
     }
 
 
+    /**
+     * Compute all differences in import declarations.
+     */
     private void computeImportsDifferences() {
         // get imports
         List<ImportDeclaration> firstIDs = mFirst.getImports();
