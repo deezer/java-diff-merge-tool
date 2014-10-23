@@ -4,7 +4,7 @@ import com.deezer.javadmt.utils.CollectionsFinder;
 import com.deezer.javadmt.utils.ImportDeclarations;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
-import japa.parser.ast.Node;
+import japa.parser.ast.PackageDeclaration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +43,26 @@ public class SmartDiff {
     }
 
     public void analyze() {
-
+        computePacakgeDifferences();
         computeImportsDifferences();
     }
 
+
+    /**
+     * Compute differences in the package declaration
+     */
+    private void computePacakgeDifferences() {
+
+        // get packages
+        PackageDeclaration firstPD = mFirst.getPakage();
+        PackageDeclaration secondPD = mSecond.getPakage();
+
+        // check for renamed package
+        if (!firstPD.getName().equals(secondPD.getName())) {
+            mDifferences.add(new PackageMovedDiffInfo(firstPD.getName().getFullName(), secondPD.getName().getFullName()));
+        }
+
+    }
 
     /**
      * Compute all differences in import declarations.
@@ -55,6 +71,21 @@ public class SmartDiff {
         // get imports
         List<ImportDeclaration> firstIDs = mFirst.getImports();
         List<ImportDeclaration> secondIDs = mSecond.getImports();
+
+        // Check for null cases
+        if ((firstIDs == null) && (secondIDs == null)) {
+            return;
+        } else if (firstIDs == null) {
+            for (ImportDeclaration sID : secondIDs) {
+                mDifferences.add(new NewImportDiffInfo(sID.getName().getFullName()));
+            }
+            return;
+        } else if (secondIDs == null) {
+            for (ImportDeclaration fID : firstIDs) {
+                mDifferences.add(new MissingImportDiffInfo(fID.getName().getFullName()));
+            }
+            return;
+        }
 
         // find reordered / missing decl
         for (int f = 0; f < firstIDs.size(); ++f) {
@@ -67,7 +98,7 @@ public class SmartDiff {
                 // same order, nothing to do
             } else if (s >= 0) {
                 // reordered imports
-                mDifferences.add(new ImportsOrderDiffInfo(fID.getName().getFullName(), f, s));
+                mDifferences.add(new ReorderImportDiffInfo(fID.getName().getFullName(), f, s));
             } else {
                 mDifferences.add(new MissingImportDiffInfo(fID.getName().getFullName()));
             }

@@ -23,7 +23,7 @@ public class NewImportDiffInfo extends ADiffInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof NewImportDiffInfo)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         NewImportDiffInfo that = (NewImportDiffInfo) o;
 

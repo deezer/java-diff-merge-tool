@@ -5,13 +5,13 @@ package com.deezer.javadmt.diff;
  *
  * @author Deezer
  */
-public class ImportsOrderDiffInfo extends ADiffInfo {
+public class ReorderImportDiffInfo extends ADiffInfo {
 
     private String mImportName;
     private int mPreviousOrder, mNewOrder;
 
 
-    public ImportsOrderDiffInfo(String importName, int previousOrder, int newOrder) {
+    public ReorderImportDiffInfo(String importName, int previousOrder, int newOrder) {
 
         if (importName == null) {
             throw new NullPointerException();
@@ -39,7 +39,7 @@ public class ImportsOrderDiffInfo extends ADiffInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ImportsOrderDiffInfo that = (ImportsOrderDiffInfo) o;
+        ReorderImportDiffInfo that = (ReorderImportDiffInfo) o;
 
         if (mNewOrder != that.mNewOrder) return false;
         if (mPreviousOrder != that.mPreviousOrder) return false;

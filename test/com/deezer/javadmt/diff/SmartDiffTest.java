@@ -1,12 +1,8 @@
 package com.deezer.javadmt.diff;
 
-import com.deezer.javadmt.diff.ADiffInfo;
-import com.deezer.javadmt.diff.ImportsOrderDiffInfo;
-import com.deezer.javadmt.diff.SmartDiff;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
-import japa.parser.ast.expr.QualifiedNameExpr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +12,6 @@ import org.junit.runners.Parameterized;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
-import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -75,26 +70,35 @@ public class SmartDiffTest {
     public static Collection generateTestParameters() {
         List<Object[]> testSets = new ArrayList<Object[]>();
 
+        // PACKAGE
+        testSets.add(new Object[]{
+                "./test_data/packages/base.java",
+                "./test_data/packages/moved.java",
+                Arrays.asList(new PackageMovedDiffInfo("com.sample.packages", "com.other.packages")),
+                "Package moved"
+        });
+
+        // IMPORTS
         testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/reordered.java",
-                Arrays.asList(new ImportsOrderDiffInfo("java.lang.Runnable", 0, 1), new ImportsOrderDiffInfo("java.lang.Exception", 1, 0)),
+                Arrays.asList(new ReorderImportDiffInfo("java.lang.Runnable", 0, 1), new ReorderImportDiffInfo("java.lang.Exception", 1, 0)),
                 "Imports reordering"
         });
-
         testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/added.java",
                 Arrays.asList(new NewImportDiffInfo("java.lang.Comparable")),
                 "Import added"
         });
-
         testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/removed.java",
                 Arrays.asList(new MissingImportDiffInfo("java.lang.Cloneable")),
-                "Import added"
+                "Import removed"
         });
+
+
 
         return testSets;
     }

@@ -21,7 +21,7 @@ public class MissingImportDiffInfo extends ADiffInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MissingImportDiffInfo)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         MissingImportDiffInfo that = (MissingImportDiffInfo) o;
 
