@@ -1,6 +1,6 @@
 package com.deezer.javadmt.diff;
 
-import com.deezer.javadmt.utils.CollectionsFinder;
+import com.deezer.javadmt.utils.Finder;
 import com.deezer.javadmt.utils.ImportDeclarations;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
@@ -92,7 +92,7 @@ public class SmartDiff {
             final ImportDeclaration fID = firstIDs.get(f);
 
             // find import with same name in second list
-            int s = CollectionsFinder.findIndex(secondIDs, ImportDeclarations.namePredicate(fID));
+            int s = Finder.findIndex(secondIDs, ImportDeclarations.namePredicate(fID));
 
             if (s == f) {
                 // same order, nothing to do
@@ -109,7 +109,7 @@ public class SmartDiff {
             final ImportDeclaration sID = secondIDs.get(s);
 
             // find import with same name in second list
-            int f = CollectionsFinder.findIndex(firstIDs, ImportDeclarations.namePredicate(sID));
+            int f = Finder.findIndex(firstIDs, ImportDeclarations.namePredicate(sID));
 
             // we only care for imports not in the first CU
             if (f < 0) {

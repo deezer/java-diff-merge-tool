@@ -1,6 +1,6 @@
 package com.other.packages;
 
 
-public class Pojo {
+public class Foo {
 
 }

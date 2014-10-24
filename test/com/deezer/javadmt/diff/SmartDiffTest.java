@@ -58,7 +58,6 @@ public class SmartDiffTest {
         mSmartDiff.analyze();
 
         assertThat(mSmartDiff.getDifferences()).isNotNull().containsAll(mExpectedDiffs);
-
     }
 
     @After
@@ -92,16 +91,27 @@ public class SmartDiffTest {
                 "Import added"
         });
         testSets.add(new Object[]{
+                "./test_data/imports/none.java",
+                "./test_data/imports/base.java",
+                Arrays.asList(new NewImportDiffInfo("java.lang.Runnable"), new NewImportDiffInfo("java.lang.Exception")),
+                "Import added all (null case)"
+        });
+        testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/removed.java",
                 Arrays.asList(new MissingImportDiffInfo("java.lang.Cloneable")),
                 "Import removed"
         });
+        testSets.add(new Object[]{
+                "./test_data/imports/base.java",
+                "./test_data/imports/none.java",
+                Arrays.asList(new MissingImportDiffInfo("java.lang.Runnable"), new MissingImportDiffInfo("java.lang.Exception")),
+                "Import removed all (null case)"
+        });
 
+        // TODO add tests around static/asterisk imports
 
 
         return testSets;
     }
-
-
 }

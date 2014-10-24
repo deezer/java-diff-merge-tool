@@ -2,13 +2,8 @@ package com.deezer.javadmt.utils;
 
 import japa.parser.ast.ImportDeclaration;
 import japa.parser.ast.expr.NameExpr;
-import japa.parser.ast.expr.QualifiedNameExpr;
-
-import java.util.Comparator;
 
 /**
- * A Comparator used to sort import declarations alphabetically
- *
  * @author Deezer
  */
 public final class ImportDeclarations {
@@ -16,8 +11,8 @@ public final class ImportDeclarations {
     /**
      * @return a predicate to match ImportDeclarations based on the name of the given declaration
      */
-    public static CollectionsFinder.Predicate<ImportDeclaration> namePredicate(final ImportDeclaration decl) {
-        return new CollectionsFinder.Predicate<ImportDeclaration>() {
+    public static Finder.Predicate<ImportDeclaration> namePredicate(final ImportDeclaration decl) {
+        return new Finder.Predicate<ImportDeclaration>() {
             NameExpr mDeclName = decl.getName();
 
             @Override

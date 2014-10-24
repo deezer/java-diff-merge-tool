@@ -4,6 +4,6 @@ package com.sample.imports;
 import java.lang.Runnable;
 import java.lang.Exception;
 
-public class RunnableException extends Exception implements Runnable {
+public class Foo {
 
 }
