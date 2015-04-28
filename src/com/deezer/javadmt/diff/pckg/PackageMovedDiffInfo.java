@@ -1,4 +1,6 @@
-package com.deezer.javadmt.diff;
+package com.deezer.javadmt.diff.pckg;
+
+import com.deezer.javadmt.diff.ADiffInfo;
 
 /**
  * @author Deezer

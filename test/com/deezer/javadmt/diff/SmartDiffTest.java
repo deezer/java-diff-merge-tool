@@ -1,8 +1,15 @@
 package com.deezer.javadmt.diff;
 
+import com.deezer.javadmt.diff.imprt.AddedImport;
+import com.deezer.javadmt.diff.imprt.RemovedImport;
+import com.deezer.javadmt.diff.imprt.ReorderedImport;
+import com.deezer.javadmt.diff.pckg.PackageMovedDiffInfo;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.expr.NameExpr;
+import japa.parser.ast.expr.QualifiedNameExpr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +64,10 @@ public class SmartDiffTest {
     public void shouldDetectDiffs() {
         mSmartDiff.analyze();
 
-        assertThat(mSmartDiff.getDifferences()).isNotNull().containsAll(mExpectedDiffs);
+        assertThat(mSmartDiff.getDifferences())
+                .isNotNull()
+                .containsOnlyElementsOf(mExpectedDiffs)
+                .containsAll(mExpectedDiffs);
     }
 
     @After
@@ -81,31 +91,42 @@ public class SmartDiffTest {
         testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/reordered.java",
-                Arrays.asList(new ReorderImportDiffInfo("java.lang.Runnable", 0, 1), new ReorderImportDiffInfo("java.lang.Exception", 1, 0)),
+                Arrays.asList(
+                        new ReorderedImport(new ImportDeclaration(qname("java.lang.Runnable"), false, false), 0, 3),
+                        new ReorderedImport(new ImportDeclaration(qname("java.util"), false, true), 3, 0)),
                 "Imports reordering"
         });
         testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/added.java",
-                Arrays.asList(new NewImportDiffInfo("java.lang.Comparable")),
+                Arrays.asList(new AddedImport(new ImportDeclaration(qname("java.lang.Comparable"), false, false)),
+                        new AddedImport(new ImportDeclaration(qname("java.lang"), false, true)),
+                        new AddedImport(new ImportDeclaration(qname("java.lang.StringBuilder"), true, false))),
                 "Import added"
         });
         testSets.add(new Object[]{
                 "./test_data/imports/none.java",
                 "./test_data/imports/base.java",
-                Arrays.asList(new NewImportDiffInfo("java.lang.Runnable"), new NewImportDiffInfo("java.lang.Exception")),
+                Arrays.asList(new AddedImport(new ImportDeclaration(qname("java.lang.Runnable"), false, false)),
+                        new AddedImport(new ImportDeclaration(qname("java.lang.Exception"), false, false)),
+                        new AddedImport(new ImportDeclaration(qname("java.lang.Cloneable"), false, false)),
+                        new AddedImport(new ImportDeclaration(qname("java.util"), false, true))),
                 "Import added all (null case)"
         });
         testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/removed.java",
-                Arrays.asList(new MissingImportDiffInfo("java.lang.Cloneable")),
+                Arrays.asList(new RemovedImport(new ImportDeclaration(qname("java.lang.Cloneable"), false, false)),
+                        new RemovedImport(new ImportDeclaration(qname("java.util"), false, true))),
                 "Import removed"
         });
         testSets.add(new Object[]{
                 "./test_data/imports/base.java",
                 "./test_data/imports/none.java",
-                Arrays.asList(new MissingImportDiffInfo("java.lang.Runnable"), new MissingImportDiffInfo("java.lang.Exception")),
+                Arrays.asList(new RemovedImport(new ImportDeclaration(qname("java.lang.Runnable"), false, false)),
+                        new RemovedImport(new ImportDeclaration(qname("java.lang.Exception"), false, false)),
+                        new RemovedImport(new ImportDeclaration(qname("java.lang.Cloneable"), false, false)),
+                        new RemovedImport(new ImportDeclaration(qname("java.util"), false, true))),
                 "Import removed all (null case)"
         });
 
@@ -113,5 +134,21 @@ public class SmartDiffTest {
 
 
         return testSets;
+    }
+
+    private static NameExpr qname(String name) {
+
+        String[] tokens = name.split("\\.");
+
+
+        return qname(tokens, tokens.length - 1);
+    }
+
+    private static NameExpr qname(String[] tokens, int index) {
+        if (index == 0) {
+            return new NameExpr(0, 0, tokens[0]);
+        }
+
+        return new QualifiedNameExpr(0, 0, qname(tokens, index - 1), tokens[index]);
     }
 }

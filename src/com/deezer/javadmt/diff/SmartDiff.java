@@ -1,5 +1,9 @@
 package com.deezer.javadmt.diff;
 
+import com.deezer.javadmt.diff.imprt.AddedImport;
+import com.deezer.javadmt.diff.imprt.RemovedImport;
+import com.deezer.javadmt.diff.imprt.ReorderedImport;
+import com.deezer.javadmt.diff.pckg.PackageMovedDiffInfo;
 import com.deezer.javadmt.utils.Finder;
 import com.deezer.javadmt.utils.ImportDeclarations;
 import japa.parser.ast.CompilationUnit;
@@ -77,12 +81,12 @@ public class SmartDiff {
             return;
         } else if (firstIDs == null) {
             for (ImportDeclaration sID : secondIDs) {
-                mDifferences.add(new NewImportDiffInfo(sID.getName().getFullName()));
+                mDifferences.add(new AddedImport(sID));
             }
             return;
         } else if (secondIDs == null) {
             for (ImportDeclaration fID : firstIDs) {
-                mDifferences.add(new MissingImportDiffInfo(fID.getName().getFullName()));
+                mDifferences.add(new RemovedImport(fID));
             }
             return;
         }
@@ -98,9 +102,9 @@ public class SmartDiff {
                 // same order, nothing to do
             } else if (s >= 0) {
                 // reordered imports
-                mDifferences.add(new ReorderImportDiffInfo(fID.getName().getFullName(), f, s));
+                mDifferences.add(new ReorderedImport(fID, f, s));
             } else {
-                mDifferences.add(new MissingImportDiffInfo(fID.getName().getFullName()));
+                mDifferences.add(new RemovedImport(fID));
             }
         }
 
@@ -113,7 +117,7 @@ public class SmartDiff {
 
             // we only care for imports not in the first CU
             if (f < 0) {
-                mDifferences.add(new NewImportDiffInfo(sID.getName().getFullName()));
+                mDifferences.add(new AddedImport(sID));
             }
         }
 

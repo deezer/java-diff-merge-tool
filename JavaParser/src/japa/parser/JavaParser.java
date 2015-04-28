@@ -201,11 +201,13 @@ public final class JavaParser implements JavaParserConstants {
         NameExpr name;
         boolean isStatic = false;
         boolean isAsterisk = false;
-        int line;
-        int column;
+        int beginLine, endLine;
+        int beginColumn, endColumn;
         jj_consume_token(IMPORT);
-        line = token.beginLine;
-        column = token.beginColumn;
+        beginLine = token.beginLine;
+        endLine = token.endLine;
+        beginColumn = token.beginColumn;
+        endColumn = token.endColumn;
         switch (jj_nt.kind) {
             case STATIC:
                 jj_consume_token(STATIC);
@@ -225,7 +227,7 @@ public final class JavaParser implements JavaParserConstants {
                 jj_la1[5] = jj_gen;
         }
         jj_consume_token(SEMICOLON);
-        return new ImportDeclaration(line, column, name, isStatic, isAsterisk);
+        return new ImportDeclaration(beginLine, beginColumn, endLine, endColumn, name, isStatic, isAsterisk);
     }
 
     /*
