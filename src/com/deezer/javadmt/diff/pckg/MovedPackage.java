@@ -1,15 +1,16 @@
 package com.deezer.javadmt.diff.pckg;
 
 import com.deezer.javadmt.diff.ADiffInfo;
+import japa.parser.ast.PackageDeclaration;
 
 /**
  * @author Deezer
  */
-public class PackageMovedDiffInfo extends ADiffInfo {
+public class MovedPackage extends ADiffInfo {
 
-    private final String mOldPackage, mNewPackage;
+    private final PackageDeclaration mOldPackage, mNewPackage;
 
-    public PackageMovedDiffInfo(String oldPackage, String newPackage) {
+    public MovedPackage(PackageDeclaration oldPackage, PackageDeclaration newPackage) {
         if ((oldPackage == null) || (newPackage == null)) {
             throw new NullPointerException();
         }
@@ -18,11 +19,11 @@ public class PackageMovedDiffInfo extends ADiffInfo {
         mNewPackage = newPackage;
     }
 
-    public String getOldPackage() {
+    public PackageDeclaration getOldPackage() {
         return mOldPackage;
     }
 
-    public String getNewPackage() {
+    public PackageDeclaration getNewPackage() {
         return mNewPackage;
     }
 
@@ -31,7 +32,7 @@ public class PackageMovedDiffInfo extends ADiffInfo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PackageMovedDiffInfo that = (PackageMovedDiffInfo) o;
+        MovedPackage that = (MovedPackage) o;
 
         if (!mNewPackage.equals(that.mNewPackage)) return false;
         if (!mOldPackage.equals(that.mOldPackage)) return false;
@@ -48,9 +49,9 @@ public class PackageMovedDiffInfo extends ADiffInfo {
 
     @Override
     public String toString() {
-        return "PackageMovedDiffInfo{" +
-                "'" + mOldPackage + '\'' +
-                " => '" + mNewPackage + '\'' +
+        return "MovedPackage{" +
+                "'" + mOldPackage.getName() + '\'' +
+                " => '" + mNewPackage.getName() + '\'' +
                 '}';
     }
 }

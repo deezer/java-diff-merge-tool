@@ -175,8 +175,7 @@ public final class JavaParser implements JavaParserConstants {
         List<AnnotationExpr> annotations = null;
         AnnotationExpr ann;
         NameExpr name;
-        int line;
-        int column;
+
         label_3:
         while (true) {
             switch (jj_nt.kind) {
@@ -190,11 +189,15 @@ public final class JavaParser implements JavaParserConstants {
             annotations = add(annotations, ann);
         }
         jj_consume_token(PACKAGE);
-        line = token.beginLine;
-        column = token.beginColumn;
+        int beginLine, endLine;
+        int beginColumn, endColumn;
+        beginLine = token.beginLine;
+        endLine = token.endLine;
+        beginColumn = token.beginColumn;
+        endColumn = token.endColumn;
         name = Name();
         jj_consume_token(SEMICOLON);
-        return new PackageDeclaration(line, column, annotations, name);
+        return new PackageDeclaration(beginLine, beginColumn, endLine, endColumn, annotations, name);
     }
 
     public ImportDeclaration ImportDeclaration() throws ParseException {

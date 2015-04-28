@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007 Júlio Vilmar Gesser.
+ * Copyright (C) 2007 Jï¿½lio Vilmar Gesser.
  * 
  * This file is part of Java 1.5 parser and Abstract Syntax Tree.
  *
@@ -26,6 +26,7 @@ import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.visitor.GenericVisitor;
 import japa.parser.ast.visitor.VoidVisitor;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,10 +38,14 @@ public final class PackageDeclaration extends Node {
 
     private final NameExpr name;
 
-    public PackageDeclaration(int line, int column, List<AnnotationExpr> annotations, NameExpr name) {
-        super(line, column);
+    public PackageDeclaration(int beginLine, int beginColumn, int endLine, int endColumn, List<AnnotationExpr> annotations, NameExpr name) {
+        super(beginLine, beginColumn, endLine, endColumn);
         this.annotations = annotations;
         this.name = name;
+    }
+
+    public PackageDeclaration(NameExpr name) {
+        this(0, 0, 0, 0, Collections.<AnnotationExpr>emptyList(), name);
     }
 
     public List<AnnotationExpr> getAnnotations() {
@@ -61,4 +66,21 @@ public final class PackageDeclaration extends Node {
         return v.visit(this, arg);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PackageDeclaration that = (PackageDeclaration) o;
+
+        return name.equals(that.name);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 13;
+        result = 31 * result + name.hashCode();
+        return result;
+    }
 }
