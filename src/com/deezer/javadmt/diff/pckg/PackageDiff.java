@@ -3,7 +3,9 @@ package com.deezer.javadmt.diff.pckg;
 import com.deezer.javadmt.diff.ADiff;
 import com.deezer.javadmt.diff.ADiffInfo;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.Node;
 import japa.parser.ast.PackageDeclaration;
+import japa.parser.ast.body.TypeDeclaration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +19,19 @@ import java.util.List;
 public class PackageDiff extends ADiff {
 
     @Override
-    public Collection<ADiffInfo> analyze(CompilationUnit left, CompilationUnit right) {
+    public Collection<ADiffInfo> analyze(Node left, Node right) {
+        if (!(left instanceof CompilationUnit)) {
+            throw new IllegalArgumentException("Expecting nodes of type CompilationUnit, got " + left.getClass().getSimpleName());
+        }
+
+        if (!(right instanceof CompilationUnit)) {
+            throw new IllegalArgumentException("Expecting nodes of type CompilationUnit, got " + left.getClass().getSimpleName());
+        }
+
+        return analyzePackages((CompilationUnit) left, (CompilationUnit) right);
+    }
+
+    Collection<ADiffInfo> analyzePackages(CompilationUnit left, CompilationUnit right) {
         List<ADiffInfo> differences = new ArrayList<ADiffInfo>();
 
         // get packages

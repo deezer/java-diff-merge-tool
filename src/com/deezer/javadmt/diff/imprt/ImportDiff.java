@@ -7,10 +7,10 @@ import com.deezer.javadmt.utils.Finder;
 import com.deezer.javadmt.utils.ImportDeclarations;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.ImportDeclaration;
+import japa.parser.ast.Node;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,8 +19,27 @@ import java.util.List;
  * @author Deezer
  */
 public class ImportDiff extends ADiff {
+
+
     @Override
-    public Collection<ADiffInfo> analyze(CompilationUnit left, CompilationUnit right) {
+    public Collection<ADiffInfo> analyze(Node left, Node right) {
+        if (!(left instanceof CompilationUnit)) {
+            throw new IllegalArgumentException("Expecting nodes of type CompilationUnit, got " + left.getClass().getSimpleName());
+        }
+
+        if (!(right instanceof CompilationUnit)) {
+            throw new IllegalArgumentException("Expecting nodes of type CompilationUnit, got " + left.getClass().getSimpleName());
+        }
+
+        return analyzeImports((CompilationUnit) left, (CompilationUnit) right);
+    }
+
+    /**
+     * @param left  the left hand
+     * @param right the right hand
+     * @return the differences between the two compilation units
+     */
+    Collection<ADiffInfo> analyzeImports(CompilationUnit left, CompilationUnit right) {
 
         List<ADiffInfo> differences = new ArrayList<ADiffInfo>();
 

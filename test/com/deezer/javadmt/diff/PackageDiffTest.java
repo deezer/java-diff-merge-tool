@@ -19,6 +19,7 @@ import java.util.*;
  */
 public class PackageDiffTest extends ADiffTest {
 
+    // TODO handle package level annotations ?
 
     @Parameterized.Parameters(name = "{index} : {3}")
     public static Collection generateTestParameters() {

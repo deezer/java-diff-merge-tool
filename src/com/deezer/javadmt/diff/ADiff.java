@@ -1,6 +1,7 @@
 package com.deezer.javadmt.diff;
 
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.Node;
 
 import java.util.Collection;
 
@@ -13,11 +14,11 @@ import java.util.Collection;
 public abstract class ADiff {
 
     /**
-     * Analyze the differences between two compilation units
+     * Analyze the differences between two AST nodes
      *
      * @param left  the left hand
      * @param right the right hand
      * @return the differences between the two compilation units
      */
-    public abstract Collection<ADiffInfo> analyze(CompilationUnit left, CompilationUnit right);
+    public abstract Collection<ADiffInfo> analyze(Node left, Node right);
 }

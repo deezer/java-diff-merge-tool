@@ -3,6 +3,7 @@ package com.deezer.javadmt.diff;
 import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
+import japa.parser.ast.Node;
 import japa.parser.ast.expr.NameExpr;
 import japa.parser.ast.expr.QualifiedNameExpr;
 import org.junit.After;
@@ -55,7 +56,7 @@ public abstract class ADiffTest {
         firstCU = JavaParser.parse(new File(mFirstPath));
         secondCU = JavaParser.parse(new File(mSecondPath));
 
-        Collection<ADiffInfo> differences = mDiff.analyze(firstCU, secondCU);
+        Collection<ADiffInfo> differences = mDiff.analyze(extractNode(firstCU), extractNode(secondCU));
 
         assertThat(differences)
                 .isNotNull()
@@ -71,6 +72,9 @@ public abstract class ADiffTest {
 
     protected abstract ADiff diffInstance();
 
+    protected Node extractNode(CompilationUnit unit) {
+        return unit;
+    }
 
     /**
      * Generates a qualified name based on the canonical class/package name
