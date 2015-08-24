@@ -4234,7 +4234,7 @@ public final class JavaParser implements JavaParserConstants {
         mCurrentLookAhead = xla;
         last_position = scan_position = token;
         try {
-            return !jj_3R_70();
+            return !scan_array();
         } catch (LookAheadException ls) {
             return true;
         } finally {
@@ -4246,7 +4246,8 @@ public final class JavaParser implements JavaParserConstants {
         mCurrentLookAhead = xla;
         last_position = scan_position = token;
         try {
-            return !jj_3_12();
+            // []
+            return !(jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET));
         } catch (LookAheadException ls) {
             return true;
         } finally {
@@ -4258,7 +4259,7 @@ public final class JavaParser implements JavaParserConstants {
         mCurrentLookAhead = xla;
         last_position = scan_position = token;
         try {
-            return !jj_3_13();
+            return !(jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET));
         } catch (LookAheadException ls) {
             return true;
         } finally {
@@ -4493,7 +4494,8 @@ public final class JavaParser implements JavaParserConstants {
         mCurrentLookAhead = xla;
         last_position = scan_position = token;
         try {
-            return !jj_3_32();
+            // []
+            return !(jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET));
         } catch (LookAheadException ls) {
             return true;
         } finally {
@@ -4621,16 +4623,21 @@ public final class JavaParser implements JavaParserConstants {
         }
     }
 
-    private boolean jj_3R_321() {
+    /**
+     * Scans the parameters in a method signature (including parentheses)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_method_definition_parameters_signature() {
         if (jj_scan_token(LPAREN)) return true;
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_336()) scan_position = xsp;
+        if (scan_method_definition_parameters()) scan_position = xsp;
         return jj_scan_token(RPAREN);
     }
 
     private boolean jj_3R_199() {
-        if (scan_condition()) return true;
+        if (jj_3R_73()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
@@ -4642,11 +4649,21 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_326() {
-        return jj_scan_token(THROWS) || jj_3R_337();
+    /**
+     * Scans a throws declaration in a method (eg : throws IOException, RuntimeException)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_throws_exceptions() {
+        return jj_scan_token(THROWS) || scan_comma_separated_identifiers();
     }
 
-    private boolean jj_3R_144() {
+    /**
+     * Scans the parameters in a method invocation (including parentheses)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_method_invocation_parameters() {
         if (jj_scan_token(LPAREN)) return true;
         Token xsp;
         xsp = scan_position;
@@ -4655,22 +4672,28 @@ public final class JavaParser implements JavaParserConstants {
     }
 
 
-    private boolean jj_3R_246() {
+    /**
+     * Scans a method full definition
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_method_definition() {
         Token xsp;
         xsp = scan_position;
-        if (scan_class_generic_type_parameters()) scan_position = xsp;
-        if (jj_3R_82()) return true;
+        if (scan_generic_type_parameters()) scan_position = xsp;
+        if (scan_type()) return true;
         if (jj_scan_token(IDENTIFIER)) return true;
-        if (jj_3R_321()) return true;
+        if (scan_method_definition_parameters_signature()) return true;
         while (true) {
             xsp = scan_position;
-            if (jj_3R_325()) {
+            // because returning arrays can also be written int foo()[] WTF
+            if (jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET)) {
                 scan_position = xsp;
                 break;
             }
         }
         xsp = scan_position;
-        if (jj_3R_326()) scan_position = xsp;
+        if (scan_throws_exceptions()) scan_position = xsp;
         xsp = scan_position;
         if (scan_brace_block()) {
             scan_position = xsp;
@@ -4679,7 +4702,12 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_228() {
+    /**
+     * Scans a boolean literal (ie : true or false)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_boolean_literal() {
         Token xsp;
         xsp = scan_position;
         if (jj_scan_token(TRUE)) {
@@ -4709,7 +4737,7 @@ public final class JavaParser implements JavaParserConstants {
         xsp = scan_position;
         if (jj_3R_142()) {
             scan_position = xsp;
-            if (scan_condition()) return true;
+            if (jj_3R_73()) return true;
         }
         return false;
     }
@@ -4718,12 +4746,12 @@ public final class JavaParser implements JavaParserConstants {
         return jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
     }
 
-    private boolean jj_3R_164() {
+    private boolean scan_identifier_array() {
         if (jj_scan_token(IDENTIFIER)) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (jj_3R_196()) {
+            if (jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET)) {
                 scan_position = xsp;
                 break;
             }
@@ -4739,7 +4767,12 @@ public final class JavaParser implements JavaParserConstants {
         return jj_scan_token(IDENTIFIER);
     }
 
-    private boolean jj_3R_181() {
+    /**
+     * Scans a primitve literal value
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_primitive_literal() {
         Token xsp;
         xsp = scan_position;
         if (jj_scan_token(INTEGER_LITERAL)) {
@@ -4752,7 +4785,7 @@ public final class JavaParser implements JavaParserConstants {
                         scan_position = xsp;
                         if (jj_scan_token(STRING_LITERAL)) {
                             scan_position = xsp;
-                            if (jj_3R_228()) {
+                            if (scan_boolean_literal()) {
                                 scan_position = xsp;
                                 if (jj_scan_token(NULL)) return true;
                             }
@@ -4765,24 +4798,24 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_126() {
-        return jj_scan_token(LBRACKET) || scan_condition() || jj_scan_token(RBRACKET);
+        return jj_scan_token(LBRACKET) || jj_3R_73() || jj_scan_token(RBRACKET);
     }
 
     private boolean jj_3R_130() {
-        if (jj_3R_164()) return true;
+        if (scan_identifier_array()) return true;
         Token xsp;
         xsp = scan_position;
         if (jj_3R_165()) scan_position = xsp;
         return false;
     }
 
-    private boolean jj_3R_162() {
+    private boolean scan_generic_method_invocation() {
         Token xsp;
         xsp = scan_position;
         if (jj_3R_71()) scan_position = xsp;
         if (jj_scan_token(IDENTIFIER)) return true;
         xsp = scan_position;
-        if (jj_3R_144()) scan_position = xsp;
+        if (scan_method_invocation_parameters()) scan_position = xsp;
         return false;
     }
 
@@ -4791,7 +4824,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3_5() {
-        if (jj_3R_63()) return true;
+        if (scan_array_or_primitive()) return true;
         if (jj_scan_token(IDENTIFIER)) return true;
         Token xsp;
         while (true) {
@@ -4815,12 +4848,12 @@ public final class JavaParser implements JavaParserConstants {
     private boolean jj_3_4() {
         Token xsp;
         xsp = scan_position;
-        if (scan_class_generic_type_parameters()) scan_position = xsp;
+        if (scan_generic_type_parameters()) scan_position = xsp;
         return jj_scan_token(IDENTIFIER) || jj_scan_token(LPAREN);
     }
 
     private boolean jj_3R_245() {
-        if (jj_3R_63()) return true;
+        if (scan_array_or_primitive()) return true;
         if (jj_3R_130()) return true;
         Token xsp;
         while (true) {
@@ -4841,7 +4874,7 @@ public final class JavaParser implements JavaParserConstants {
             scan_position = xsp;
             if (jj_3R_184()) {
                 scan_position = xsp;
-                if (jj_3R_162()) return true;
+                if (scan_generic_method_invocation()) return true;
             }
         }
         return false;
@@ -4867,17 +4900,17 @@ public final class JavaParser implements JavaParserConstants {
         if (scan_modifiers()) return true;
         Token xsp;
         xsp = scan_position;
-        if (scan_class_raw_signature()) {
+        if (scan_class_raw_declaration()) {
             scan_position = xsp;
-            if (jj_3R_242()) {
+            if (scan_enum_raw_declaration()) {
                 scan_position = xsp;
-                if (jj_3R_243()) {
+                if (scan_annotation_raw_declaration()) {
                     scan_position = xsp;
-                    if (jj_3R_244()) {
+                    if (scan_constructor()) {
                         scan_position = xsp;
                         if (jj_3R_245()) {
                             scan_position = xsp;
-                            if (jj_3R_246()) return true;
+                            if (scan_method_definition()) return true;
                         }
                     }
                 }
@@ -4902,20 +4935,20 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3_27() {
-        return jj_3R_82() || jj_scan_token(DOT) || jj_scan_token(CLASS);
+        return scan_type() || jj_scan_token(DOT) || jj_scan_token(CLASS);
     }
 
 
-    private boolean jj_3R_153() {
+    private boolean scan_method_invocation() {
         if (jj_scan_token(IDENTIFIER)) return true;
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_144()) scan_position = xsp;
+        if (scan_method_invocation_parameters()) scan_position = xsp;
         return false;
     }
 
     private boolean jj_3R_361() {
-        if (jj_3R_63()) return true;
+        if (scan_array_or_primitive()) return true;
         if (jj_scan_token(IDENTIFIER)) return true;
         if (jj_scan_token(LPAREN)) return true;
         if (jj_scan_token(RPAREN)) return true;
@@ -4938,17 +4971,27 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_152() {
-        return jj_3R_82() || jj_scan_token(DOT) || jj_scan_token(CLASS);
+    /**
+     * Scans a type class (Foo.class)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_type_class() {
+        return scan_type() || jj_scan_token(DOT) || jj_scan_token(CLASS);
     }
 
     private boolean jj_3_42() {
-        return jj_3R_63() || jj_scan_token(IDENTIFIER) || jj_scan_token(LPAREN);
+        return scan_array_or_primitive() || jj_scan_token(IDENTIFIER) || jj_scan_token(LPAREN);
     }
 
 
+    /**
+     * (...)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
     private boolean jj_3R_150() {
-        return jj_scan_token(LPAREN) || scan_condition() || jj_scan_token(RPAREN);
+        return jj_scan_token(LPAREN) || jj_3R_73() || jj_scan_token(RPAREN);
     }
 
 
@@ -4975,7 +5018,7 @@ public final class JavaParser implements JavaParserConstants {
         return jj_scan_token(COMMA) || jj_3R_61();
     }
 
-    private boolean jj_3R_149() {
+    private boolean scan_super_method_invocation() {
         if (jj_scan_token(SUPER)) return true;
         if (jj_scan_token(DOT)) return true;
         Token xsp;
@@ -4983,18 +5026,18 @@ public final class JavaParser implements JavaParserConstants {
         if (jj_3R_71()) scan_position = xsp;
         if (jj_scan_token(IDENTIFIER)) return true;
         xsp = scan_position;
-        if (jj_3R_144()) scan_position = xsp;
+        if (scan_method_invocation_parameters()) scan_position = xsp;
         return false;
     }
 
 
     /**
-     * Scans a compound type extension (eg: "& Bar" in "T extends Foo & Bar")
+     * Scans a compound class type (eg: "& Bar" in "T extends Foo & Bar")
      *
      * @return true if the scan fails (yeah... weird)
      */
-    private boolean scan_compound_type_extension() {
-        return jj_scan_token(BIT_AND) || scan_parent_type();
+    private boolean scan_compound_class_type() {
+        return jj_scan_token(BIT_AND) || scan_class_type();
     }
 
     private boolean jj_3R_351() {
@@ -5003,11 +5046,11 @@ public final class JavaParser implements JavaParserConstants {
         xsp = scan_position;
         if (jj_3R_361()) {
             scan_position = xsp;
-            if (scan_class_raw_signature()) {
+            if (scan_class_raw_declaration()) {
                 scan_position = xsp;
-                if (jj_3R_242()) {
+                if (scan_enum_raw_declaration()) {
                     scan_position = xsp;
-                    if (jj_3R_243()) {
+                    if (scan_annotation_raw_declaration()) {
                         scan_position = xsp;
                         if (jj_3R_245()) return true;
                     }
@@ -5025,11 +5068,11 @@ public final class JavaParser implements JavaParserConstants {
      */
     private boolean scan_generic_type_extensions() {
         if (jj_scan_token(EXTENDS)) return true;
-        if (scan_parent_type()) return true;
+        if (scan_class_type()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (scan_compound_type_extension()) {
+            if (scan_compound_class_type()) {
                 scan_position = xsp;
                 break;
             }
@@ -5050,19 +5093,19 @@ public final class JavaParser implements JavaParserConstants {
     private boolean jj_3R_102() {
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_181()) {
+        if (scan_primitive_literal()) {
             scan_position = xsp;
             if (jj_scan_token(THIS)) {
                 scan_position = xsp;
-                if (jj_3R_149()) {
+                if (scan_super_method_invocation()) {
                     scan_position = xsp;
                     if (jj_3R_150()) {
                         scan_position = xsp;
                         if (jj_3R_184()) {
                             scan_position = xsp;
-                            if (jj_3R_152()) {
+                            if (scan_type_class()) {
                                 scan_position = xsp;
-                                if (jj_3R_153()) return true;
+                                if (scan_method_invocation()) return true;
                             }
                         }
                     }
@@ -5086,7 +5129,12 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_320() {
+    /**
+     * Scans the block definition of an annotation
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_annotation_definition() {
         if (jj_scan_token(LBRACE)) return true;
         Token xsp;
         while (true) {
@@ -5114,7 +5162,7 @@ public final class JavaParser implements JavaParserConstants {
      *
      * @return true if the scan fails (yeah... weird)
      */
-    private boolean scan_class_generic_type_parameters() {
+    private boolean scan_generic_type_parameters() {
         if (jj_scan_token(LT)) return true;
         if (scan_generic_type()) return true;
         Token xsp;
@@ -5141,8 +5189,16 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_243() {
-        return jj_scan_token(AT) || jj_scan_token(INTERFACE) || jj_scan_token(IDENTIFIER) || jj_3R_320();
+    /**
+     * Scans an annotation definition
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_annotation_raw_declaration() {
+        return jj_scan_token(AT) ||
+                jj_scan_token(INTERFACE) ||
+                jj_scan_token(IDENTIFIER) ||
+                scan_annotation_definition();
     }
 
 
@@ -5170,7 +5226,7 @@ public final class JavaParser implements JavaParserConstants {
         }
         if (jj_scan_token(IDENTIFIER)) return true;
         xsp = scan_position;
-        if (jj_3R_144()) scan_position = xsp;
+        if (scan_method_invocation_parameters()) scan_position = xsp;
         xsp = scan_position;
         if (jj_3R_84()) scan_position = xsp;
         return false;
@@ -5207,7 +5263,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_257() {
-        return jj_scan_token(LPAREN) || jj_3R_63() || jj_scan_token(RPAREN) || jj_3R_159();
+        return jj_scan_token(LPAREN) || scan_array_or_primitive() || jj_scan_token(RPAREN) || jj_3R_159();
     }
 
     private boolean jj_3R_166() {
@@ -5265,24 +5321,36 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_242() {
+    private boolean scan_enum_raw_declaration() {
+
+        // enum Foo
         if (jj_scan_token(ENUM)) return true;
         if (jj_scan_token(IDENTIFIER)) return true;
+
+
         Token xsp;
         xsp = scan_position;
-        if (scan_class_implements_types()) scan_position = xsp;
+
+        // implements Eggs, Bacon
+        if (scan_implements_class_types()) scan_position = xsp;
+
+        // {
         if (jj_scan_token(LBRACE)) return true;
         xsp = scan_position;
+
         if (jj_3R_318()) scan_position = xsp;
         xsp = scan_position;
+
         if (jj_scan_token(COMMA)) scan_position = xsp;
         xsp = scan_position;
         if (jj_3R_319()) scan_position = xsp;
+
+        // }
         return jj_scan_token(RBRACE);
     }
 
     private boolean jj_3_23() {
-        return jj_scan_token(LPAREN) || jj_3R_63() || jj_scan_token(LBRACKET);
+        return jj_scan_token(LPAREN) || scan_array_or_primitive() || jj_scan_token(LBRACKET);
     }
 
     private boolean jj_3R_264() {
@@ -5290,11 +5358,11 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_123() {
-        return jj_scan_token(LPAREN) || jj_3R_63() || jj_scan_token(RPAREN) || jj_3R_159();
+        return jj_scan_token(LPAREN) || scan_array_or_primitive() || jj_scan_token(RPAREN) || jj_3R_159();
     }
 
     private boolean jj_3R_122() {
-        return jj_scan_token(LPAREN) || jj_3R_63() || jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
+        return jj_scan_token(LPAREN) || scan_array_or_primitive() || jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
     }
 
     private boolean jj_3R_77() {
@@ -5309,12 +5377,12 @@ public final class JavaParser implements JavaParserConstants {
 
 
     /**
-     * Scans additional types in a list (like a list of interface, eg : , FooListener, BarListener)
+     * Scans a comma followed by a class type (eg: ",Foo")
      *
      * @return true if the scan fails (yeah... weird)
      */
-    private boolean scan_additional_types() {
-        return jj_scan_token(COMMA) || scan_parent_type();
+    private boolean scan_additional_class_type() {
+        return jj_scan_token(COMMA) || scan_class_type();
     }
 
     private boolean jj_3R_247() {
@@ -5330,13 +5398,18 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean scan_class_implements_types() {
+    /**
+     * Scans a class's interfaces in the class definition (eg: "implements String, Foo, Bar")
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_implements_class_types() {
         if (jj_scan_token(IMPLEMENTS)) return true;
-        if (scan_parent_type()) return true;
+        if (scan_class_type()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (scan_additional_types()) {
+            if (scan_additional_class_type()) {
                 scan_position = xsp;
                 break;
             }
@@ -5344,6 +5417,10 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     private boolean jj_3R_237() {
         Token xsp;
         xsp = scan_position;
@@ -5382,13 +5459,13 @@ public final class JavaParser implements JavaParserConstants {
      *
      * @return true if the scan fails (yeah... weird)
      */
-    private boolean scan_class_extends_type() {
+    private boolean scan_extends_class_type() {
         if (jj_scan_token(EXTENDS)) return true;
-        if (scan_parent_type()) return true;
+        if (scan_class_type()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (scan_additional_types()) {
+            if (scan_additional_class_type()) {
                 scan_position = xsp;
                 break;
             }
@@ -5450,7 +5527,7 @@ public final class JavaParser implements JavaParserConstants {
      *
      * @return true if the scan fails (yeah... weird)
      */
-    private boolean scan_class_raw_signature() {
+    private boolean scan_class_raw_declaration() {
         Token xsp;
         xsp = scan_position;
 
@@ -5465,15 +5542,15 @@ public final class JavaParser implements JavaParserConstants {
         xsp = scan_position;
 
         // Generic params ? <T> / <E extends Foo>
-        if (scan_class_generic_type_parameters()) scan_position = xsp;
+        if (scan_generic_type_parameters()) scan_position = xsp;
         xsp = scan_position;
 
         // Parent class ? extends Bar
-        if (scan_class_extends_type()) scan_position = xsp;
+        if (scan_extends_class_type()) scan_position = xsp;
         xsp = scan_position;
 
         // Parent interfaces ? implements Bacon, Egg, Spam<String>
-        if (scan_class_implements_types()) scan_position = xsp;
+        if (scan_implements_class_types()) scan_position = xsp;
 
         return jj_3R_84();
     }
@@ -5536,7 +5613,7 @@ public final class JavaParser implements JavaParserConstants {
      * @return true if the scan fails (yeah... weird)
      */
     private boolean scan_catch_block() {
-        return jj_scan_token(CATCH) || jj_scan_token(LPAREN) || jj_3R_344() || jj_scan_token(RPAREN) || scan_brace_block();
+        return jj_scan_token(CATCH) || jj_scan_token(LPAREN) || scan_method_definition_parameter() || jj_scan_token(RPAREN) || scan_brace_block();
     }
 
     /**
@@ -5686,6 +5763,11 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
+    /**
+     * Scans a list of modifiers before a class / method / variable
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
     private boolean scan_modifiers() {
         Token xsp;
         while (true) {
@@ -5713,7 +5795,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_309() {
-        return jj_scan_token(INSTANCEOF) || jj_3R_63();
+        return jj_scan_token(INSTANCEOF) || scan_array_or_primitive();
     }
 
     private boolean jj_3R_306() {
@@ -5731,7 +5813,7 @@ public final class JavaParser implements JavaParserConstants {
 
     private boolean jj_3R_297() {
         // synchronized ( ???) {
-        return jj_scan_token(SYNCHRONIZED) || jj_scan_token(LPAREN) || scan_condition() || jj_scan_token(RPAREN) || scan_brace_block();
+        return jj_scan_token(SYNCHRONIZED) || jj_scan_token(LPAREN) || jj_3R_73() || jj_scan_token(RPAREN) || scan_brace_block();
     }
 
     private boolean jj_3R_313() {
@@ -5751,7 +5833,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_296() {
-        return jj_scan_token(THROW) || scan_condition() || jj_scan_token(SEMICOLON);
+        return jj_scan_token(THROW) || jj_3R_73() || jj_scan_token(SEMICOLON);
     }
 
     private boolean jj_3R_304() {
@@ -5790,12 +5872,12 @@ public final class JavaParser implements JavaParserConstants {
         if (jj_scan_token(RETURN)) return true;
         Token xsp;
         xsp = scan_position;
-        if (scan_condition()) scan_position = xsp;
+        if (jj_3R_73()) scan_position = xsp;
         return jj_scan_token(SEMICOLON);
     }
 
     private boolean jj_3R_391() {
-        return jj_scan_token(COMMA) || scan_condition();
+        return jj_scan_token(COMMA) || jj_3R_73();
     }
 
     private boolean jj_3R_305() {
@@ -5885,7 +5967,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3_38() {
-        return scan_modifiers() || jj_3R_63() || jj_scan_token(IDENTIFIER);
+        return scan_modifiers() || scan_array_or_primitive() || jj_scan_token(IDENTIFIER);
     }
 
     private boolean jj_3R_235() {
@@ -5902,7 +5984,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_390() {
-        if (scan_condition()) return true;
+        if (jj_3R_73()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
@@ -5975,7 +6057,7 @@ public final class JavaParser implements JavaParserConstants {
         if (jj_3R_386()) scan_position = xsp;
         if (jj_scan_token(SEMICOLON)) return true;
         xsp = scan_position;
-        if (scan_condition()) scan_position = xsp;
+        if (jj_3R_73()) scan_position = xsp;
         if (jj_scan_token(SEMICOLON)) return true;
         xsp = scan_position;
         if (jj_3R_390()) scan_position = xsp;
@@ -5983,11 +6065,11 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_366() {
-        return jj_3R_87() || jj_scan_token(COLON) || scan_condition();
+        return jj_3R_87() || jj_scan_token(COLON) || jj_3R_73();
     }
 
     private boolean jj_3R_215() {
-        return jj_scan_token(HOOK) || scan_condition() || jj_scan_token(COLON) || jj_3R_119();
+        return jj_scan_token(HOOK) || jj_3R_73() || jj_scan_token(COLON) || jj_3R_119();
     }
 
     private boolean jj_3R_119() {
@@ -6029,7 +6111,7 @@ public final class JavaParser implements JavaParserConstants {
         return jj_scan_token(DO) ||
                 scan_statement_or_block() ||
                 jj_scan_token(WHILE) ||
-                jj_scan_token(LPAREN) || scan_condition() || jj_scan_token(RPAREN) ||
+                jj_scan_token(LPAREN) || jj_3R_73() || jj_scan_token(RPAREN) ||
                 jj_scan_token(SEMICOLON);
     }
 
@@ -6073,24 +6155,29 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_346() {
+    /**
+     * Scans a comma followed by a qualified identifier
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_additional_identifier() {
         return jj_scan_token(COMMA) || scan_qualified_identifier();
     }
 
     private boolean scan_while_block() {
-        return jj_scan_token(WHILE) || jj_scan_token(LPAREN) || scan_condition() || jj_scan_token(RPAREN) || scan_statement_or_block();
+        return jj_scan_token(WHILE) || jj_scan_token(LPAREN) || jj_3R_73() || jj_scan_token(RPAREN) || scan_statement_or_block();
     }
 
     private boolean jj_3_18() {
-        return jj_3R_72() || scan_condition();
+        return jj_3R_72() || jj_3R_73();
     }
 
     /**
-     * Scans a boolean condition
+     * Scans a boolean condition ?
      *
      * @return true if the scan fails (yeah... weird)
      */
-    private boolean scan_condition() {
+    private boolean jj_3R_73() {
         if (jj_3R_119()) return true;
         Token xsp;
         xsp = scan_position;
@@ -6108,7 +6195,7 @@ public final class JavaParser implements JavaParserConstants {
     private boolean scan_if_else_block() {
         if (jj_scan_token(IF)) return true;
         if (jj_scan_token(LPAREN)) return true;
-        if (scan_condition()) return true;
+        if (jj_3R_73()) return true;
         if (jj_scan_token(RPAREN)) return true;
         if (scan_statement_or_block()) return true;
         Token xsp;
@@ -6121,16 +6208,26 @@ public final class JavaParser implements JavaParserConstants {
         return jj_scan_token(COMMA) || jj_3R_130();
     }
 
-    private boolean jj_3R_384() {
-        return jj_scan_token(CASE) || scan_condition();
+    /**
+     * Scans a case ... label (without the colon)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_case_label() {
+        return jj_scan_token(CASE) || jj_3R_73();
     }
 
-    private boolean jj_3R_337() {
+    /**
+     * Scans a list of comma separated identifiers
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_comma_separated_identifiers() {
         if (scan_qualified_identifier()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (jj_3R_346()) {
+            if (scan_additional_identifier()) {
                 scan_position = xsp;
                 break;
             }
@@ -6138,10 +6235,15 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_375() {
+    /**
+     * Scans a case ... or default label  (for a switch block) including the colon
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_case_or_default() {
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_384()) {
+        if (scan_case_label()) {
             scan_position = xsp;
             if (jj_scan_token(_DEFAULT)) return true;
         }
@@ -6178,13 +6280,13 @@ public final class JavaParser implements JavaParserConstants {
     private boolean jj_3R_288() {
         if (jj_scan_token(SWITCH)) return true;
         if (jj_scan_token(LPAREN)) return true;
-        if (scan_condition()) return true;
+        if (jj_3R_73()) return true;
         if (jj_scan_token(RPAREN)) return true;
         if (jj_scan_token(LBRACE)) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (jj_3R_375()) {
+            if (scan_case_or_default()) {
                 scan_position = xsp;
                 break;
             }
@@ -6193,7 +6295,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_383() {
-        return jj_3R_72() || scan_condition();
+        return jj_3R_72() || jj_3R_73();
     }
 
     private boolean jj_3R_374() {
@@ -6209,12 +6311,17 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_82() {
+    /**
+     * Scans the return type in a method signature
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_type() {
         Token xsp;
         xsp = scan_position;
         if (jj_scan_token(VOID)) {
             scan_position = xsp;
-            if (jj_3R_63()) return true;
+            if (scan_array_or_primitive()) return true;
         }
         return false;
     }
@@ -6246,28 +6353,33 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3R_363() {
-        return jj_scan_token(COLON) || scan_condition();
+        return jj_scan_token(COLON) || jj_3R_73();
     }
 
     private boolean jj_3R_253() {
-        return jj_scan_token(SUPER) || jj_3R_70();
+        return jj_scan_token(SUPER) || scan_array();
     }
 
     private boolean jj_3R_234() {
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_252()) {
+        if (scan_extends_array()) {
             scan_position = xsp;
             if (jj_3R_253()) return true;
         }
         return false;
     }
 
-    private boolean jj_3R_252() {
-        return jj_scan_token(EXTENDS) || jj_3R_70();
+    private boolean scan_extends_array() {
+        return jj_scan_token(EXTENDS) || scan_array();
     }
 
-    private boolean jj_3R_140() {
+    /**
+     * Scans a primitive type name
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_primitive_type() {
         Token xsp;
         xsp = scan_position;
         if (jj_scan_token(BOOLEAN)) {
@@ -6306,7 +6418,7 @@ public final class JavaParser implements JavaParserConstants {
 
     private boolean jj_3R_87() {
         if (scan_modifiers()) return true;
-        if (jj_3R_63()) return true;
+        if (scan_array_or_primitive()) return true;
         if (jj_3R_130()) return true;
         Token xsp;
         while (true) {
@@ -6344,26 +6456,18 @@ public final class JavaParser implements JavaParserConstants {
      * @return true if the scan fails (yeah... weird)
      */
     private boolean scan_class_signature() {
-        return scan_modifiers() || scan_class_raw_signature();
+        return scan_modifiers() || scan_class_raw_declaration();
     }
 
-
-    private boolean jj_3R_322() {
-        return jj_scan_token(THROWS) || jj_3R_337();
-    }
 
     private boolean jj_3R_106() {
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_70()) {
+        if (scan_array()) {
             scan_position = xsp;
             if (jj_3R_186()) return true;
         }
         return false;
-    }
-
-    private boolean jj_3_13() {
-        return jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
     }
 
     private boolean jj_3R_198() {
@@ -6379,6 +6483,11 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
+    /**
+     * <...></...>
+     *
+     * @return
+     */
     private boolean jj_3R_71() {
         if (jj_scan_token(LT)) return true;
         if (jj_3R_106()) return true;
@@ -6402,11 +6511,6 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3_12() {
-        // []
-        return jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
-    }
-
     /**
      * Scans a full braced block of statements
      *
@@ -6417,17 +6521,12 @@ public final class JavaParser implements JavaParserConstants {
         return jj_scan_token(LBRACE) || jj_3R_141() || jj_scan_token(RBRACE);
     }
 
-    private boolean jj_3_32() {
-        // []
-        return jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
-    }
-
     /**
-     * Scans a generic parent type (eg : Foo, Bar&lt;Spam>)
+     * Scans a generic class type (eg : Foo, Bar&lt;Spam>)
      *
      * @return true if the scan fails (yeah... weird)
      */
-    private boolean scan_parent_type() {
+    private boolean scan_class_type() {
         if (jj_scan_token(IDENTIFIER)) return true;
         Token xsp;
         xsp = scan_position;
@@ -6453,12 +6552,17 @@ public final class JavaParser implements JavaParserConstants {
         return jj_scan_token(IDENTIFIER) || jj_scan_token(COLON) || scan_statement_or_block();
     }
 
-    private boolean jj_3R_105() {
-        if (scan_parent_type()) return true;
+    /**
+     * Scans a class array (eg: String[], Foo[][])
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_class_array() {
+        if (scan_class_type()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (jj_3_13()) {
+            if (jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET)) {
                 scan_position = xsp;
                 break;
             }
@@ -6466,13 +6570,18 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_104() {
-        if (jj_3R_140()) return true;
+    /**
+     * Scans a primitive array type (eg: int[][][], float[])
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_primitive_array() {
+        if (scan_primitive_type()) return true;
         Token xsp;
-        if (jj_3_12()) return true;
+        if (jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET)) return true;
         while (true) {
             xsp = scan_position;
-            if (jj_3_12()) {
+            if (jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET)) {
                 scan_position = xsp;
                 break;
             }
@@ -6480,12 +6589,17 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_70() {
+    /**
+     * Scans an array (primitive or Class)
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_array() {
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_104()) {
+        if (scan_primitive_array()) {
             scan_position = xsp;
-            if (jj_3R_105()) return true;
+            if (scan_class_array()) return true;
         }
         return false;
     }
@@ -6498,7 +6612,7 @@ public final class JavaParser implements JavaParserConstants {
     private boolean scan_assert_statement() {
         if (jj_scan_token(ASSERT)) return true;
 
-        if (scan_condition()) return true;
+        if (jj_3R_73()) return true;
         Token xsp;
         xsp = scan_position;
         if (jj_3R_363()) scan_position = xsp;
@@ -6507,12 +6621,12 @@ public final class JavaParser implements JavaParserConstants {
     }
 
 
-    private boolean jj_3R_63() {
+    private boolean scan_array_or_primitive() {
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_70()) {
+        if (scan_array()) {
             scan_position = xsp;
-            if (jj_3R_140()) return true;
+            if (scan_primitive_type()) return true;
         }
         return false;
     }
@@ -6558,13 +6672,18 @@ public final class JavaParser implements JavaParserConstants {
         return jj_3R_68() || jj_scan_token(DOT);
     }
 
-    private boolean jj_3R_101() {
+    /**
+     * Scans invocation of the super class constructor
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_super_constructor_invocation() {
         Token xsp;
         xsp = scan_position;
         if (jj_3R_145()) scan_position = xsp;
         xsp = scan_position;
         if (jj_3R_71()) scan_position = xsp;
-        return jj_scan_token(SUPER) || jj_3R_144() || jj_scan_token(SEMICOLON);
+        return jj_scan_token(SUPER) || scan_method_invocation_parameters() || jj_scan_token(SEMICOLON);
     }
 
     private boolean scan_statement_or_block() {
@@ -6619,11 +6738,17 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_100() {
+    /**
+     * Scans invocation of this constructor
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_this_constructor_invocation() {
         Token xsp;
         xsp = scan_position;
         if (jj_3R_71()) scan_position = xsp;
-        return jj_scan_token(THIS) || jj_3R_144() || jj_scan_token(SEMICOLON);
+
+        return jj_scan_token(THIS) || scan_method_invocation_parameters() || jj_scan_token(SEMICOLON);
     }
 
 
@@ -6632,7 +6757,7 @@ public final class JavaParser implements JavaParserConstants {
     }
 
     private boolean jj_3_31() {
-        return jj_scan_token(LBRACKET) || scan_condition() || jj_scan_token(RBRACKET);
+        return jj_scan_token(LBRACKET) || jj_3R_73() || jj_scan_token(RBRACKET);
     }
 
     private boolean jj_3R_251() {
@@ -6660,7 +6785,8 @@ public final class JavaParser implements JavaParserConstants {
         }
         while (true) {
             xsp = scan_position;
-            if (jj_3_32()) {
+            // []
+            if (jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET)) {
                 scan_position = xsp;
                 break;
             }
@@ -6671,19 +6797,11 @@ public final class JavaParser implements JavaParserConstants {
     private boolean jj_3R_67() {
         Token xsp;
         xsp = scan_position;
-        if (jj_3R_100()) {
+        if (scan_this_constructor_invocation()) {
             scan_position = xsp;
-            if (jj_3R_101()) return true;
+            if (scan_super_constructor_invocation()) return true;
         }
         return false;
-    }
-
-    private boolean jj_3R_325() {
-        return jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
-    }
-
-    private boolean jj_3R_345() {
-        return jj_scan_token(COMMA) || jj_3R_344();
     }
 
     private boolean jj_3R_230() {
@@ -6698,7 +6816,7 @@ public final class JavaParser implements JavaParserConstants {
 
 
     private boolean jj_3R_233() {
-        if (jj_3R_144()) return true;
+        if (scan_method_invocation_parameters()) return true;
         Token xsp;
         xsp = scan_position;
         if (jj_3R_84()) scan_position = xsp;
@@ -6707,18 +6825,22 @@ public final class JavaParser implements JavaParserConstants {
 
 
     private boolean jj_3R_227() {
-        return jj_scan_token(COMMA) || scan_condition();
+        return jj_scan_token(COMMA) || jj_3R_73();
     }
 
-
-    private boolean jj_3R_244() {
+    /**
+     * Scans a constructor definition
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_constructor() {
         Token xsp;
         xsp = scan_position;
-        if (scan_class_generic_type_parameters()) scan_position = xsp;
+        if (scan_generic_type_parameters()) scan_position = xsp;
         if (jj_scan_token(IDENTIFIER)) return true;
-        if (jj_3R_321()) return true;
+        if (scan_method_definition_parameters_signature()) return true;
         xsp = scan_position;
-        if (jj_3R_322()) scan_position = xsp;
+        if (scan_throws_exceptions()) scan_position = xsp;
         if (jj_scan_token(LBRACE)) return true;
         xsp = scan_position;
         if (jj_3R_67()) scan_position = xsp;
@@ -6729,7 +6851,7 @@ public final class JavaParser implements JavaParserConstants {
         Token xsp;
         xsp = scan_position;
         if (jj_3R_71()) scan_position = xsp;
-        if (scan_parent_type()) return true;
+        if (scan_class_type()) return true;
         xsp = scan_position;
         if (jj_3R_230()) {
             scan_position = xsp;
@@ -6738,12 +6860,8 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_196() {
-        return jj_scan_token(LBRACKET) || jj_scan_token(RBRACKET);
-    }
-
     private boolean jj_3R_207() {
-        return jj_3R_140() || jj_3R_230();
+        return scan_primitive_type() || jj_3R_230();
     }
 
     private boolean jj_3R_263() {
@@ -6770,21 +6888,31 @@ public final class JavaParser implements JavaParserConstants {
         return false;
     }
 
-    private boolean jj_3R_344() {
+    /**
+     * Scans a single parameter in a method signature
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_method_definition_parameter() {
         if (scan_modifiers()) return true;
-        if (jj_3R_63()) return true;
+        if (scan_array_or_primitive()) return true;
         Token xsp;
         xsp = scan_position;
         if (jj_scan_token(ELLIPSIS)) scan_position = xsp;
-        return jj_3R_164();
+        return scan_identifier_array();
     }
 
-    private boolean jj_3R_336() {
-        if (jj_3R_344()) return true;
+    /**
+     * Scan a comma separated list of parameters
+     *
+     * @return true if the scan fails (yeah... weird)
+     */
+    private boolean scan_method_definition_parameters() {
+        if (scan_method_definition_parameter()) return true;
         Token xsp;
         while (true) {
             xsp = scan_position;
-            if (jj_3R_345()) {
+            if (jj_scan_token(COMMA) || scan_method_definition_parameter()) {
                 scan_position = xsp;
                 break;
             }
@@ -7016,13 +7144,12 @@ public final class JavaParser implements JavaParserConstants {
                                 jj_3_10();
                                 break;
                             case 10:
-                                jj_3R_70();
+                                scan_array();
                                 break;
                             case 11:
-                                jj_3_12();
+                                // []
                                 break;
                             case 12:
-                                jj_3_13();
                                 break;
                             case 13:
                                 jj_3R_71();
@@ -7079,7 +7206,7 @@ public final class JavaParser implements JavaParserConstants {
                                 jj_3_31();
                                 break;
                             case 31:
-                                jj_3_32();
+                                // []
                                 break;
                             case 32:
                                 jj_3_33();
