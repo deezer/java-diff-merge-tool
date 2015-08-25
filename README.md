@@ -2,6 +2,12 @@
 
 Java Diff/Merge tool is a utility used to provide information and automatic resolution for merge conflicts on Java files. 
 
+## Motivation
+
+We're not the only one who noticed the absurdity of comparing and merging source code based only on text. This tool is going to be aware of the Java syntax and context, and can categorize a change as "MethodNameChanged" or "NestedClassAdded". 
+
+Once a logical diff is available, merging can be handled with more ease.
+
 ## Running
 
 This project is under active development but is not ready to be used yet...
@@ -12,9 +18,9 @@ Use only this tool to perform merges in our production environment
 
 ## Changelog
 
-### v0.1 (2012-10-22)
+### v0.1 (????-??-??)
 
- - Initial commit
+ - ...
 
 ## TODOs and Possible Features
 
